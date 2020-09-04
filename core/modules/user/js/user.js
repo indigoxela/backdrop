@@ -154,6 +154,14 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
   var hasUppercase = /[A-Z]+/.test(password);
   var hasNumbers = /[0-9]+/.test(password);
   var hasPunctuation = /[^a-zA-Z0-9]+/.test(password);
+  var uniqueChars = '';
+
+  // Collect the unique characters in password to evaluate entropy.
+  for (var i = 0; i < password.length; i++) {
+    if (uniqueChars.indexOf(password[i]) == -1) {
+      uniqueChars += password[i];
+    }
+  }
 
   // If there is a username or email field on the page, compare the password to
   // that; otherwise use the value from the database.
@@ -168,11 +176,11 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
 
   // Calculate the number of unique character sets within a string.
   // Adapted from https://github.com/dropbox/zxcvbn.
-  var cardinality = (hasLowercase * 26) + (hasUppercase * 26) + (hasNumbers * 10) + (hasPunctuation * 33);
+  var cardinality = (hasLowercase * 10) + (hasUppercase * 10) + (hasNumbers * 10) + (hasPunctuation * 10);
 
   // Assign strength based on the level of entropy within the password, times
   // its length. Again, adapted from zxcvbn.
-  strength = (Math.log(cardinality) / Math.log(2)) * password.length + 1;
+  strength = (Math.log(cardinality) / Math.log(3)) * (password.length + uniqueChars.length);
 
   // Check if password is the same as the username or email.
   if (password !== '') {
@@ -181,11 +189,6 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
     email = email.toLowerCase();
 
     if (password === username || password === email) {
-      strength = 5;
-    }
-    // Consider admin password constraint settings if active.
-    // Use Array.from() so doesn't count unicode characters twice.
-    if (config.user_password_min_length_enabled && Array.from(password).length < config.user_password_min_length) {
       strength = 5;
     }
   }
