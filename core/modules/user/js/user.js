@@ -156,13 +156,6 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
   var hasPunctuation = /[^a-zA-Z0-9]+/.test(password);
   var uniqueChars = '';
 
-  // Collect the unique characters in password to evaluate entropy.
-  for (var i = 0; i < password.length; i++) {
-    if (uniqueChars.indexOf(password[i]) == -1) {
-      uniqueChars += password[i];
-    }
-  }
-
   // If there is a username or email field on the page, compare the password to
   // that; otherwise use the value from the database.
   var usernameBox = $('input.username');
@@ -174,16 +167,23 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
     email = emailBox.val();
   }
 
-  // Calculate the number of unique character sets within a string.
-  // Adapted from https://github.com/dropbox/zxcvbn.
-  var cardinality = uniqueChars.length + (hasLowercase * 1) + (hasUppercase * 1) + (hasNumbers * 1) + (hasPunctuation * 1);
-
-  // Assign strength based on the level of entropy within the password, times
-  // its length. Again, adapted from zxcvbn.
-  strength = Math.log(cardinality) * (password.length * Math.log(password.length));
-
-  // Check if password is the same as the username or email.
   if (password !== '') {
+    // Collect the unique characters in password to evaluate entropy.
+    for (var i = 0; i < password.length; i++) {
+      if (uniqueChars.indexOf(password[i]) == -1) {
+        uniqueChars += password[i];
+      }
+    }
+
+    // Calculate the number of unique character sets within a string.
+    // Adapted from https://github.com/dropbox/zxcvbn.
+    var cardinality = uniqueChars.length + (hasLowercase * 1) + (hasUppercase * 1) + (hasNumbers * 1) + (hasPunctuation * 1);
+
+    // Assign strength based on the level of entropy within the password, times
+    // its length. Again, adapted from zxcvbn.
+    strength = Math.log(cardinality) * (password.length * Math.log(password.length));
+
+    // Check if password is the same as the username or email.
     password = password.toLowerCase();
     username = username.toLowerCase();
     email = email.toLowerCase();
