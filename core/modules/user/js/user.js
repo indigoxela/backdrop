@@ -177,7 +177,7 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
 
     // Calculate the number of unique character sets within a string.
     // Adapted from https://github.com/dropbox/zxcvbn.
-    var cardinality = uniqueChars.length + (hasLowercase * 1) + (hasUppercase * 1) + (hasNumbers * 1) + (hasPunctuation * 1);
+    var cardinality = (uniqueChars.length + (hasLowercase * 2) + (hasUppercase * 2) + (hasNumbers * 2) + (hasPunctuation * 2)) * 0.75 + 1;
 
     // Assign strength based on the level of entropy within the password, times
     // its length. Again, adapted from zxcvbn.
