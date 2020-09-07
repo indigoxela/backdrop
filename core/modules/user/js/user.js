@@ -175,13 +175,15 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
       }
     }
 
-    // Calculate the number of unique character sets within a string.
-    // Adapted from https://github.com/dropbox/zxcvbn.
-    var cardinality = (uniqueChars.length + (hasLowercase * 2) + (hasUppercase * 2) + (hasNumbers * 2) + (hasPunctuation * 2)) * 0.75 + 1;
+    // Calculate the number of unique characters and sets within a string.
+    // Factor 5 enforces a password minlength of 10.
+    // Factor 1.5 would enforce 12.
+    var factor = 5;
+    var cardinality = (hasLowercase * factor) + (hasUppercase * factor) + (hasNumbers * factor) + (hasPunctuation * factor);
 
     // Assign strength based on the level of entropy within the password, times
-    // its length. Again, adapted from zxcvbn.
-    strength = Math.log(cardinality) * (password.length * Math.log(password.length));
+    // its length.
+    strength = Math.log10(cardinality * uniqueChars.length) * (password.length * Math.log(password.length));
 
     // Check if password is the same as the username or email.
     password = password.toLowerCase();
@@ -191,12 +193,9 @@ Backdrop.evaluatePasswordStrength = function (password, settings) {
     if (password === username || password === email) {
       strength = 5;
     }
-    // While the password is too short keep it in "weak" state, but let the
-    // color bar move on.
-    // @todo Do not hardcode the limit.
-    var minlength = 8;
-    if (password.length < minlength) {
-      strength = Math.min(strength, 50 - (minlength - password.length));
+    // Make sure a password that only consist of digits is always "weak".
+    if (/^[0-9]+$/.test(password)) {
+      strength = Math.min(strength, 49);
     }
   }
 
