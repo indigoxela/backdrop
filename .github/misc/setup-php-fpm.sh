@@ -4,7 +4,7 @@
 # workflow file.
 
 # This script handles one required numeric parameter - the PHP version.
-OLDPHP=$(echo "$1 < 7" | bc -l)
+OLDPHP=$(echo "$1 < 7" | /usr/bin/bc -l)
 
 # Apache mpm_event refuses to work with older PHP versions, we have to switch to
 # mpm_prefork for 5.x. The paths to config files differ for 5.x as set up by
