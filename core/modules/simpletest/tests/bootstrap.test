@@ -143,7 +143,7 @@ class BootstrapPageCacheTestCase extends BackdropWebTestCase {
     $this->assertResponse(200, 'Conditional request without If-None-Match returned 200 OK.');
     $this->assertEqual($this->backdropGetHeader('X-Backdrop-Cache'), 'HIT', 'Page was cached.');
 
-    $this->backdropGet($test_path, array(), array('If-Modified-Since: ' . gmdate(DATE_RFC1123, strtotime($last_modified) + 2), 'If-None-Match: ' . $etag));
+    $this->backdropGet($test_path, array(), array('If-Modified-Since: ' . gmdate(DATE_RFC1123, time()), 'If-None-Match: ' . $etag));
     $this->assertResponse(200, 'Conditional request with new a If-Modified-Since date newer than Last-Modified returned 200 OK.');
     $this->assertEqual($this->backdropGetHeader('X-Backdrop-Cache'), 'HIT', 'Page was cached.');
 
