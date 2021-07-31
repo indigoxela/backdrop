@@ -47,11 +47,7 @@ jobs:
           # Setup php-fpm, this script is by intention not executable by default.
           chmod 700 .github/misc/setup-php-fpm.sh
           ./.github/misc/setup-php-fpm.sh ${{ matrix.php-versions }}
-          sudo systemctl restart php${{ matrix.php-versions }}-fpm.service
-          sudo apt-get install libapache2-mod-fcgid
-          sudo a2enmod rewrite proxy fcgid proxy_fcgi
-          sudo systemctl start apache2.service
-          # Verify webserver setup.
+          # Verify webserver setup, this should be a redirect to the installer.
           curl -sI 'http://localhost/'
 
       - name: Move files dir to /dev/shm
@@ -78,7 +74,5 @@ jobs:
           free -m
           echo Get disk usage
           df -h
-          echo Get php log
-          sudo cat /var/log/php${{ matrix.php-versions }}-fpm.log
           echo Get running procs by user
           pgrep -au runner
