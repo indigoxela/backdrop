@@ -34,7 +34,7 @@ sudo sed -i -e 's/user = www-data/user = runner/' \
 
 # Let above changes take effect and setup Apache to work with php-fpm.
 sudo systemctl restart php${1}-fpm.service
-sudo apt-get install libapache2-mod-fcgid
+sudo apt-get -q install libapache2-mod-fcgid
 sudo a2enmod rewrite proxy fcgid proxy_fcgi
 sudo systemctl start apache2.service
 
