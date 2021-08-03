@@ -1,8 +1,0 @@
-custom_service_name: "Functional Tests"
-subprojects:
-  - id: functional_tests
-    paths:
-      - "**"
-    checks:
-      - "simpletest"
-      - "dummytest"

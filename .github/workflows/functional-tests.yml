@@ -76,10 +76,3 @@ jobs:
           df -h
           echo Get running procs by user
           pgrep -au runner
-
-  dummytest:
-    name: Dummy test
-    runs-on: ubuntu-18.04
-    steps:
-      - name: Dummy step
-        run: echo 'This does nothing but an echo'
