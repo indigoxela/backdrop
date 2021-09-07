@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.4']
-        fraction: ['9/15']
+        fraction: ['2/3']
 
     steps:
       - uses: getong/mariadb-action@v1.1
@@ -56,7 +56,7 @@ jobs:
       - name: Run tests
         run: |
           echo Running fraction ${{ matrix.fraction }} with PHP ${{ matrix.php-versions }}
-          core/scripts/run-tests.sh --force --cache --verbose --color --directory=core --split=${{ matrix.fraction }} --concurrency 7
+          core/scripts/run-tests.sh --force --cache --verbose --color --directory=core --split=${{ matrix.fraction }} --concurrency 10
 
       - name: System status
         if: ${{ always() }}
