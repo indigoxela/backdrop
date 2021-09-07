@@ -26,7 +26,7 @@ jobs:
           netstat -tapn
           # Use .my.cnf to avoid user / password on commandline.
           echo -e '[client]\nuser = root\npassword = root' > ~/.my.cnf
-          mysql -V
+          mysql -p 3800 -V
 
       - name: Checkout
         uses: actions/checkout@v2
@@ -51,7 +51,7 @@ jobs:
           curl -sI 'http://localhost/'
 
       - name: Install Backdrop
-        run: core/scripts/install.sh --db-url=mysql://root:root@127.0.0.1/backdrop
+        run: core/scripts/install.sh --db-url=mysql://root:root@127.0.0.1:3800/backdrop
 
       - name: Run tests
         run: |
