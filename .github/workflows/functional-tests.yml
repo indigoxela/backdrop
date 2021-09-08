@@ -17,10 +17,10 @@ jobs:
           sudo apt-get -q=2 update
           sudo apt-get -q=2  purge mysql-server mysql-client
           sudo apt-get -q=2  install mariadb-server mariadb-client
-          sudo grep -r datadir /etc/mysql
           # Disable apparmor for mysql or mariadb.
           #sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
           #sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
+          sudo ls -l /etc/apparmor.d/
           sudo systemctl stop apparmor
           sudo systemctl disable apparmor
           # Move datadir and tmpdir to shared memory.
