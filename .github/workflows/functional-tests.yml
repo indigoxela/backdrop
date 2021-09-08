@@ -15,8 +15,8 @@ jobs:
       - name: Setup MySQL and create database
         run: |
           # Kill Apparmor or it kills MariaDB
-          sudo service apparmor stop
-          sudo service apparmor disable
+          sudo systemctl stop apparmor.service
+          sudo update-rc.d -f apparmor remove
           # Switch to MariaDB.
           sudo apt-get -q=2 update
           sudo apt-get -q=2 purge mysql-server mysql-client
