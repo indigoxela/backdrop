@@ -14,12 +14,12 @@ jobs:
     steps:
       - name: Setup MySQL and create database
         run: |
-          # Disable apparmor for mysql.
-          #sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
-          #sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
-          sudo apt update
-          sudo apt purge mysql-server mysql-client
-          sudo apt install mariadb-server mariadb-client
+          sudo apt-get -q=2 update
+          sudo apt-get -q=2  purge mysql-server mysql-client
+          sudo apt-get -q=2  install mariadb-server mariadb-client
+          # Disable apparmor for mysql or mariadb.
+          sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+          sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
           # Move datadir and tmpdir to shared memory.
           sudo mkdir /dev/shm/mysql_tmp
           sudo chown mysql:mysql /dev/shm/mysql_tmp
