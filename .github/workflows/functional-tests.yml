@@ -24,6 +24,7 @@ jobs:
             -e 's?^.*tmpdir\s*=.*?tmpdir = /dev/shm/mysql_tmp?' /etc/mysql/mysql.conf.d/mysqld.cnf
           sudo mv /var/lib/mysql /dev/shm
           # Force charset and collation
+          sudo grep -r collat /etc/mysql
           sudo sed -i -e '$acharacter-set-server = utf8' /etc/mysql/mysql.conf.d/mysqld.cnf
           sudo sed -i -e '$acollation-server = utf8_general_ci' /etc/mysql/mysql.conf.d/mysqld.cnf
           sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf
