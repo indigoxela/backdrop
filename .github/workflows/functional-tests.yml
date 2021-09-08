@@ -16,12 +16,13 @@ jobs:
         run: |
           # Apparmor kills MariaDB
           # But it won't stop...
-          sudo systemctl stop apparmor
-          sudo systemctl disable apparmor
-          sudo apt-get purge apparmor
+          #sudo systemctl stop apparmor
+          #sudo systemctl disable apparmor
+          #sudo apt-get purge apparmor
           # Switch to MariaDB.
           sudo apt-get -q=2 update
           sudo apt-get -q=2 purge mysql-server mysql-client
+          aa-remove-unknown
           sudo apt-get -q=2 install mariadb-server mariadb-client
           # Move datadir and tmpdir to shared memory.
           sudo mkdir /dev/shm/mysql_tmp
