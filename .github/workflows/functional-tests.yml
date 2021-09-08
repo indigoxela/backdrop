@@ -32,6 +32,7 @@ jobs:
       - name: System status
         if: ${{ always() }}
         run: |
+          sudo journalctl -xe
           sudo systemctl status mysql.service
           sudo tail /var/log/syslog
           echo Get load
