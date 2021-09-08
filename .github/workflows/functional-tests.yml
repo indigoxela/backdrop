@@ -19,6 +19,9 @@ jobs:
           sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
           # Move datadir and tmpdir to shared memory.
           sudo mkdir /dev/shm/mysql_tmp
+          sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf
+          sudo grep -r datadir /etc/mysql
+          sudo grep -r tmpdir /etc/mysql
           sudo chown mysql:mysql /dev/shm/mysql_tmp
           sudo sed -i -e 's?datadir\s*=.*?datadir = /dev/shm/mysql?' \
             -e 's?tmpdir\s*=.*?tmpdir = /dev/shm/mysql_tmp?' /etc/mysql/mysql.conf.d/mysqld.cnf
