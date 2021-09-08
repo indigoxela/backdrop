@@ -28,7 +28,7 @@ jobs:
           cat /etc/mysql/mysql.conf.d/mysqld.cnf
           sudo systemctl start mysql.service
           # Use .my.cnf to avoid user / password on commandline.
-          echo -e '[client]\nuser = root\npassword = root' > ~/.my.cnf
+          sudo echo -e '[client]\nuser = root\npassword = root' > ~/.my.cnf
           mysql -V
           mysql -e 'show variables like "character_set%";'
           mysql -e 'CREATE DATABASE backdrop;'
