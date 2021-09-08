@@ -20,7 +20,7 @@ jobs:
           # Move datadir and tmpdir to shared memory.
           sudo mkdir /dev/shm/mysql_tmp
           sudo cat /etc/mysql/mysql.conf.d/mysqld.cnf
-          sudo grep -r datadir /etc/mysql
+          sudo grep -r '/var/lib/mysql' /etc
           sudo grep -r tmpdir /etc/mysql
           sudo chown mysql:mysql /dev/shm/mysql_tmp
           sudo sed -i -e 's?datadir\s*=.*?datadir = /dev/shm/mysql?' \
@@ -35,8 +35,6 @@ jobs:
       - name: System status
         if: ${{ always() }}
         run: |
-          sudo journalctl -xe
-          sudo systemctl status mysql.service
           sudo tail /var/log/syslog
           echo Get load
           uptime
