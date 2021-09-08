@@ -16,8 +16,7 @@ jobs:
         run: |
           # Kill Apparmor or it kills MariaDB
           sudo service apparmor stop
-          sudo service apparmor teardown
-          sudo update-rc.d -f apparmor remove
+          sudo service apparmor disable
           # Switch to MariaDB.
           sudo apt-get -q=2 update
           sudo apt-get -q=2 purge mysql-server mysql-client
