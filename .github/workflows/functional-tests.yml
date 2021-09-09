@@ -22,6 +22,7 @@ jobs:
             tmpdir=/dev/shm/mysql_tmp'
           auto-start: false
 
+      - name: Setup Database step 2
         run: |
           # Apparmor kills MariaDB
           # But it won't stop...
