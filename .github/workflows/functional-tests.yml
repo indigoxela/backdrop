@@ -47,9 +47,9 @@ jobs:
           #sudo systemctl start mysql.service
           # Use .my.cnf to avoid user / password on commandline.
           echo -e '[client]\nuser = root\npassword = root' > ~/.my.cnf
-          mysql -V
-          mysql -e 'show variables like "collation%";'
-          mysql -e 'CREATE DATABASE backdrop;'
+          #mysql -V
+          mysql -h127.0.0.1 -e 'show variables like "collation%";'
+          mysql -h127.0.0.1 -e 'CREATE DATABASE backdrop;'
 
       - name: Checkout
         uses: actions/checkout@v2
