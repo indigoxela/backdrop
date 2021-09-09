@@ -23,7 +23,7 @@ jobs:
           distribution: mariadb
           mysql-version: '10.3'
           root-password: 'root'
-          my-cnf: 'datadir=/dev/shm/mysql\ntmpdir=/dev/shm/mysql_tmp'
+          my-cnf: 'datadir=/dev/shm/mysql tmpdir=/dev/shm/mysql_tmp'
           auto-start: true
 
       - name: Verify setup and create database
