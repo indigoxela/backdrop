@@ -19,11 +19,13 @@ jobs:
           mysql-version: '10.3'
           root-password: 'root'
           my-cnf: 'datadir=/dev/shm/mysql'
-          auto-start: false
+          auto-start: true
 
       - name: Setup Database step 2
         run: |
           sudo ls -lR /etc/mysql
+          sudo pgrep mysql
+          sudo systemctl stop mysql.service
           
           # Apparmor kills MariaDB
           # But it won't stop...
