@@ -12,23 +12,29 @@ jobs:
         fraction: ['1/20']
 
     steps:
-      - name: Setup MySQL and create database
+      - name: Setup Database
+        uses: shogo82148/actions-setup-mysql@v1
+        with:
+          distribution: mariadb
+          mysql-version: '10.3'
+          root-password: 'root'
+          my-cnf: 'datadir=/dev/shm/mysql
+            tmpdir=/dev/shm/mysql_tmp'
+          auto-start: false
+
         run: |
           # Apparmor kills MariaDB
           # But it won't stop...
           #sudo systemctl stop apparmor
           #sudo systemctl disable apparmor
           #sudo apt-get purge apparmor
+          sudo ln -s /etc/apparmor.d/usr.sbin.mysqld /etc/apparmor.d/disable/
+          sudo apparmor_parser -R /etc/apparmor.d/usr.sbin.mysqld
           # Switch to MariaDB.
-          sudo apt-get -q=2 update
-          sudo apt-get -q=2 purge mysql-server mysql-client
-          sudo aa-remove-unknown
-          sudo apt-get -q=2 install mariadb-server mariadb-client
+
           # Move datadir and tmpdir to shared memory.
           sudo mkdir /dev/shm/mysql_tmp
           sudo chown mysql:mysql /dev/shm/mysql_tmp
-          sudo sed -i -e 's?^.*datadir\s*=.*?datadir = /dev/shm/mysql?' \
-            -e 's?^.*tmpdir\s*=.*?tmpdir = /dev/shm/mysql_tmp?' /etc/mysql/mariadb.conf.d/50-server.cnf
           sudo mv /var/lib/mysql /dev/shm
           sudo systemctl start mysql.service
           # Use .my.cnf to avoid user / password on commandline.
@@ -65,7 +71,7 @@ jobs:
       - name: Run tests
         run: |
           echo Running fraction ${{ matrix.fraction }} with PHP ${{ matrix.php-versions }}
-          core/scripts/run-tests.sh --force --cache --verbose --color --directory=core --split=${{ matrix.fraction }} --concurrency 7
+          # core/scripts/run-tests.sh --force --cache --verbose --color --directory=core --split=${{ matrix.fraction }} --concurrency 7
 
       - name: System status
         if: ${{ always() }}
