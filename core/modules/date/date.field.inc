@@ -300,6 +300,20 @@ function date_field_widget_info() {
   // Add the fieldset option for select fields only.
   $info['date_select']['settings']['no_fieldset'] = FALSE;
 
+  // HTML5 widget with slightly different settings.
+  $info['date_html5'] = array(
+    'label' => t('HTML5 widget'),
+    'field types' => array('date', 'datetime', 'datestamp'),
+    'settings' => array(
+      'limits' => array(
+        'mode' => 'none',
+        'years_back' => -3,
+        'years_forward' => 3,
+      ),
+      'no_fieldset' => TRUE,
+    ),
+  );
+
   return $info;
 }
 
@@ -339,6 +353,109 @@ function date_field_widget_info() {
  */
 function date_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $base) {
   module_load_include('inc', 'date', 'date.elements');
+
+  // The HTML5 widget differs quite a bit.
+  if ($instance['widget']['type'] == 'date_html5') {
+    if (!isset($form['#entity'])) {
+      // Prevent additional default value and useless token browser on the
+      // settings form.
+      $form['#access'] = FALSE;
+      return;
+    }
+    $field_settings = $field['settings'];
+    $widget_settings = $instance['widget']['settings'];
+
+    // We have to take some liberties here: only two types of "granularity",
+    // date with or without time. Time eventually without seconds.
+    $granularity = array_filter($field_settings['granularity']);
+    $type = empty($granularity['hour']) ? 'html_date' : 'html_datetime';
+    $timestep = empty($granularity['second']) ? 60 : 1;
+
+    $date_limits = _date_html5_get_date_limits($widget_settings['limits']);
+    $attributes = _date_html5_get_attributes($date_limits, $granularity);
+
+    $timezone_db = date_get_timezone_db($field_settings['tz_handling']);
+    $timezone = date_get_timezone($field_settings['tz_handling']);
+    if (isset($items[$delta]['timezone'])) {
+      $timezone = $items[$delta]['timezone'];
+    }
+
+    $value = '';
+    $has_todate = !empty($field_settings['todate']);
+    if ($delta == 0) {
+      $default = _date_html5_get_default_value($field, $instance, $langcode);
+    }
+
+    if (isset($items[$delta]['value'])) {
+      $value = _date_html5_get_form_value($items[$delta]['value'], $type, $timestep, $timezone_db, $timezone);
+    }
+    elseif ($delta == 0) {
+      $value = $default['start'];
+    }
+    $element['value'] = array(
+      '#type' => $type,
+      '#title' => ($has_todate) ? t('Start date') : t('Date'),
+      '#default_value' => $value,
+      '#required' => ($instance['required'] && $delta == 0),
+      '#attributes' => $attributes,
+      '#date_timezone' => $timezone,
+      '#timezone_db' => $timezone_db,
+      '#min' => $date_limits['min'],
+      '#max' => $date_limits['max'],
+    );
+
+    if ($has_todate) {
+      $value2 = '';
+      if (isset($items[$delta]['value2'])) {
+        $value2 = _date_html5_get_form_value($items[$delta]['value2'], $type, $timestep, $timezone_db, $timezone);
+      }
+      elseif ($delta == 0) {
+        $value2 = $default['end'];
+      }
+      $element['value2'] = array(
+        '#type' => $type,
+        '#title' => t('End date'),
+        '#default_value' => $value2,
+        '#required' => (($field_settings['todate'] != 'optional') && $delta == 0),
+        '#attributes' => $attributes,
+        '#date_timezone' => $timezone,
+      );
+    }
+    if ($field_settings['tz_handling'] == 'date') {
+      $element['timezone'] = array(
+        '#type' => 'date_timezone',
+        '#title' => t('Timezone'),
+        '#date_label_position' => NULL,
+        '#default_value' => isset($items[$delta]['timezone']) ? $items[$delta]['timezone'] : '',
+      );
+    }
+
+    // Prevent running again for every additional field item.
+    if ($delta == 0) {
+      $element['#element_validate'] = array('date_html5_element_validate');
+      $element['#attached']['css'][] = backdrop_get_path('module', 'date') . '/css/date-html5.css';
+    }
+
+    // Wrap in a fieldset or not, set labels accordingly.
+    if ($widget_settings['no_fieldset']) {
+      if ($field['cardinality'] == '1') {
+        $element['value']['#title'] = check_plain($instance['label']);
+        if (!empty($instance['description'])) {
+          $element['value']['#description'] = field_filter_xss($instance['description']);
+        }
+      }
+    }
+    else {
+      $element['#theme_wrappers'][] = 'fieldset';
+      $element['#title'] = check_plain($instance['label']);
+      $element['#description'] = field_filter_xss($instance['description']);
+    }
+    $element['#field_name'] = $field['field_name'];
+    $element['#field_type'] = $field['type'];
+    $element['#field_label'] = $instance['label'];
+
+    return $element;
+  }
 
   $element = $base;
 
@@ -547,6 +664,9 @@ function date_field_instance_settings_form($field, $instance) {
  */
 function date_field_widget_settings_form($field, $instance) {
   module_load_include('inc', 'date', 'date.admin');
+  if ($instance['widget']['type'] == 'date_html5') {
+    return _date_html5_field_widget_settings_form($instance);
+  }
   return _date_field_widget_settings_form($field, $instance);
 }
 
@@ -556,4 +676,70 @@ function date_field_widget_settings_form($field, $instance) {
 function date_field_settings_form($field, $instance, $has_data) {
   module_load_include('inc', 'date', 'date.admin');
   return _date_field_settings_form($field, $instance, $has_data);
+}
+
+/**
+ * Custom callback to provide the widget settings form.
+ *
+ * @param array $instance
+ *   Field instance definition.
+ *
+ * @return array
+ *   Widget settings form structure.
+ */
+function _date_html5_field_widget_settings_form(array $instance) {
+  $settings = $instance['widget']['settings'];
+  $form = array();
+
+  $form['limits'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Date input limits'),
+    '#description' => t('Applies to start and end if enabled and is relative to the current date.'),
+  );
+  $form['limits']['mode'] = array(
+    '#type' => 'radios',
+    '#title' => t('Limits'),
+    '#options' => array(
+      'none' => t('No limit'),
+      'byyear' => t('By year'),
+    ),
+    '#default_value' => $settings['limits']['mode'],
+  );
+  $form['limits']['years_back'] = array(
+    '#type' => 'number',
+    '#title' => t('Starting year'),
+    '#min' => -9999,
+    '#max' => 0,
+    '#default_value' => $settings['limits']['years_back'],
+    '#description' => t('Empty value for no limit.'),
+    '#field_suffix' => t('from current year'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="instance[widget][settings][limits][mode]"]' => array('value' => 'byyear'),
+      ),
+    ),
+  );
+  $form['limits']['years_forward'] = array(
+    '#type' => 'number',
+    '#title' => t('Ending year'),
+    '#min' => 0,
+    '#max' => 9999,
+    '#default_value' => $settings['limits']['years_forward'],
+    '#description' => t('Empty value for no limit.'),
+    '#field_suffix' => t('from current year'),
+    '#states' => array(
+      'visible' => array(
+        ':input[name="instance[widget][settings][limits][mode]"]' => array('value' => 'byyear'),
+      ),
+    ),
+  );
+
+  $form['no_fieldset'] = array(
+    '#type' => 'checkbox',
+    '#title'  => t('Exclude wrapping fieldset'),
+    '#default_value' => !empty($settings['no_fieldset']),
+    '#description' => t('If using simple inputs such as a single textfield or the date popup, omitting the fieldset may provide simpler styling.'),
+  );
+
+  return $form;
 }
