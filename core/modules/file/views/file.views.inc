@@ -228,7 +228,7 @@ function file_views_data() {
   // uid
   $data['file_managed']['uid'] = array(
     'title' => t('User who uploaded'),
-    'help' => t('The user account that uploaded the file. If you need more fields than the uid add the File: User who uploaded relationship'),
+    'help' => t('The user account that uploaded the file. If more fields than UID are needed, add the "File: User who uploaded" relationship'),
     'relationship' => array(
       'title' => t('User who uploaded'),
       'label' => t('User who uploaded'),
