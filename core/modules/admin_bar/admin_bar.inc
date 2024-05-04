@@ -753,7 +753,6 @@ function admin_bar_links_locale() {
     '#title' => isset($language->native) ? $language->native : $language->name,
     '#attributes' => array('class' => array('admin-bar-locale-links')),
     '#options' => array(
-      'html' => TRUE,
       'icon' => 'translate-fill',
     ),
   ) + admin_bar_locale_links();
