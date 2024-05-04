@@ -6,6 +6,9 @@
  *
  * @see https://www.htmldog.com/articles/suckerfish
  */
+:root {
+  --admin-bar-height: 2.25em;
+}
 
 #admin-bar {
   /* Adjusting font size will scale the entire admin menu, including icons. */
@@ -29,11 +32,11 @@
 }
 /* When body is a contextual links region. */
 .contextual-links-region #admin-bar {
-  top: -2.25em;
+  top: calc(var(--admin-bar-height) * -1)
 }
 
 .admin-bar body {
-  border-top: 2.25em solid #2D2D2D !important;
+  border-top: var(--admin-bar-height) solid #2D2D2D !important;
 }
 
 /* Top level items. */
