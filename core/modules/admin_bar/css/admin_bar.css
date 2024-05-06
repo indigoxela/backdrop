@@ -7,12 +7,12 @@
  * @see https://www.htmldog.com/articles/suckerfish
  */
 :root {
-  --admin-bar-height: 2.25em;
+  --admin-bar-height: 2.35rem;
 }
 
 #admin-bar {
   /* Adjusting font size will scale the entire admin menu, including icons. */
-  font: normal 12px "Lucida Grande", Verdana, sans-serif;
+  font: normal 0.75rem "Lucida Grande", Verdana, sans-serif;
   left: 0;
   position: absolute;
   text-align: left; /* LTR */
