@@ -138,7 +138,7 @@
 #admin-bar-menu > li.expandable > ul.dropdown > li > a,
 #admin-bar-extra > li.expandable > ul.dropdown > li > a,
 #admin-bar-extra > li.expandable > ul.dropdown > li > span {
-  padding: .5em .75em .5em .7em;
+  padding: 0.5em 0.75em 0.5em 0.7em;
 }
 #admin-bar a.expanded-trail,
 #admin-bar span.expanded-trail {
@@ -241,13 +241,13 @@
   height: 100%;
   margin: -0.5em 0;
   position: absolute;
-  right: .7em; /* LTR */
+  right: 0.7em; /* LTR */
 }
 [dir="rtl"] #admin-bar .dropdown li li.expandable > a::before {
   /*noinspection CssUnresolvedCustomProperty*/
   mask-image: var(--icon-arrow-left);
   right: auto;
-  left: .7em;
+  left: 0.7em;
 }
 #admin-bar .dropdown li li a.expanded-trail {
   background-color: #111;
