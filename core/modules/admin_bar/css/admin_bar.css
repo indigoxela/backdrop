@@ -6,6 +6,9 @@
  *
  * @see https://www.htmldog.com/articles/suckerfish
  */
+
+/* Set a CSS property declaring the height of the admin bar. */
+/* This can be read by themes to offset the top of the page if needed. */
 :root {
   --admin-bar-height: 2.35rem;
 }
