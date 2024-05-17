@@ -9,7 +9,6 @@
 
 /* Set a CSS property declaring the height of the admin bar. */
 /* This can be read by themes to offset the top of the page if needed. */
-
 :root {
   --admin-bar-font-size: 12px;
   --admin-bar-height: calc(var(--admin-bar-font-size) * 3.1);
@@ -104,6 +103,7 @@
   padding: 0;
   line-height: 1.5;
 }
+
 /* Dropdown lists. */
 #admin-bar .dropdown {
   list-style: none;
