@@ -97,9 +97,9 @@ class IconTestCase extends BackdropWebTestCase {
     $options_alt = array(
       'alt' => 'Hello world',
     );
-    $result_alt = '<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 256" fill="currentColor" class="icon icon--circle-fill"><title>Hello world</title><path d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"/></svg>';
+    $expected_alt = '<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 256" fill="currentColor" class="icon icon--circle-fill"><title>Hello world</title><path d="M232,128A104,104,0,1,1,128,24,104.13,104.13,0,0,1,232,128Z"/></svg>';
     $icon = icon('circle-fill', $options_alt);
-    $this->assertEqual($icon, $result_alt, 'Alt option properly converted to title dom element.');
+    $this->assertEqual($icon, $expected_alt, 'Alt option properly converted to title dom element.');
 
     $options_dimensions = array(
       'attributes' => array(
@@ -107,18 +107,18 @@ class IconTestCase extends BackdropWebTestCase {
         'height' => 99,
       ),
     );
-    $result_dimensions = '<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 256" fill="currentColor" width="99" height="99" aria-hidden="true" class="icon icon--line-vertical"><path d="M136,24V232a8,8,0,0,1-16,0V24a8,8,0,0,1,16,0Z"/></svg>';
+    $expected_dimensions = '<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 256" fill="currentColor" width="99" height="99" aria-hidden="true" class="icon icon--line-vertical"><path d="M136,24V232a8,8,0,0,1-16,0V24a8,8,0,0,1,16,0Z"/></svg>';
     $icon = icon('line-vertical', $options_dimensions);
-    $this->assertEqual($icon, $result_dimensions, 'Width and height attributes properly added.');
+    $this->assertEqual($icon, $expected_dimensions, 'Width and height attributes properly added.');
 
     $options_fill = array(
       'attributes' => array(
         'fill' => 'red',
       ),
     );
-    $result_fill = '<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 256" fill="red" aria-hidden="true" class="icon icon--dot"><path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128Z"/></svg>';
+    $expected_fill = '<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 256 256" fill="red" aria-hidden="true" class="icon icon--dot"><path d="M140,128a12,12,0,1,1-12-12A12,12,0,0,1,140,128Z"/></svg>';
     $icon = icon('dot', $options_fill);
-    $this->assertEqual($icon, $result_fill, 'Value of fill attribute properly overridden.');
+    $this->assertEqual($icon, $expected_fill, 'Value of fill attribute properly overridden.');
   }
 
   /**
