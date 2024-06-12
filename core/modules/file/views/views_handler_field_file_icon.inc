@@ -50,7 +50,7 @@ class views_handler_field_file_icon extends views_handler_field {
       $icon_name = 'file-' . $this->mapExtension($extension);
       $icon = icon($icon_name, $options);
       // Fall back to generic file icon.
-      if (strpos($icon, '<!-- Icon') === 0) {
+      if (strpos($icon, '<!-- ') === 0) {
         $icon = icon('file', $options);
       }
       return $icon;
