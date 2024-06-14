@@ -129,6 +129,16 @@ class IconTestCase extends BackdropWebTestCase {
     $expected_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="4"/></svg>';
     $updated_svg = image_add_svg_attributes($initial_svg, $options);
     $this->assertEqual($updated_svg, $expected_svg, 'Title tag stripped and aria attribute added properly.');
+
+    // Make sure, a comment does not break attribute handling.
+    $initial_svg = '<!-- Some vendor comment --><svg width="16" height="16" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="4"></circle></svg>';
+    $options = array(
+      'alt' => 'Some alternative text',
+      'fill' => 'blue',
+    );
+    $expected_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" version="1.1" viewBox="0 0 16 16" fill="blue"><title>Some alternative text</title><circle cx="8" cy="8" r="4"/></svg>';
+    $updated_svg = image_add_svg_attributes($initial_svg, $options);
+    $this->assertEqual($updated_svg, $expected_svg, 'Addition of title and attribute works with comment in svg file.');
   }
 
   /**
