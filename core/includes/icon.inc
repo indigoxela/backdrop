@@ -340,4 +340,5 @@ function theme_icon(array $variables) {
       return image_add_svg_attributes($svg_contents, $variables['attributes']);
     }
   }
+  return '';
 }
