@@ -35,7 +35,7 @@ class views_handler_argument_file_type extends views_handler_argument_string {
   protected function fileType($type) {
     $output = file_type_get_name($type);
     if (empty($output)) {
-      $output = t('Unknown file type');
+      return t('Unknown file type');
     }
     return check_plain($output);
   }
