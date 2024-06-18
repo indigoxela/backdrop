@@ -33,10 +33,10 @@ class views_handler_argument_file_type extends views_handler_argument_string {
    *   The File type label, if the type exists.
    */
   protected function fileType($type) {
-    $output = file_type_get_name($type);
-    if (empty($output)) {
+    $file_type_name = file_type_get_name($type);
+    if (empty($file_type_name)) {
       return t('Unknown file type');
     }
-    return check_plain($output);
+    return check_plain($file_type_name);
   }
 }
