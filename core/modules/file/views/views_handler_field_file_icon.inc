@@ -15,6 +15,7 @@ class views_handler_field_file_icon extends views_handler_field {
   public function option_definition() {
     $options = parent::option_definition();
     $options['icon_size'] = array('default' => 32);
+    $options['display_type'] = array('default' => 'svg');
     return $options;
   }
 
@@ -31,6 +32,15 @@ class views_handler_field_file_icon extends views_handler_field {
       '#default_value' => $this->options['icon_size'],
       '#field_suffix' => 'px',
     );
+    $form['display_type'] = array(
+      '#type' => 'radios',
+      '#title' => t('Display type'),
+      '#options' => array(
+        'svg' => t('As svg tag'),
+        'img' => t('As img tag'),
+      ),
+      '#default_value' => $this->options['display_type'],
+    );
   }
 
   /**
@@ -41,20 +51,41 @@ class views_handler_field_file_icon extends views_handler_field {
 
     // If there is an extension.
     if ($extension = pathinfo($value, PATHINFO_EXTENSION)) {
-      $options = array(
-        'attributes' => array(
-          'width' => $this->options['icon_size'],
-          'height' => $this->options['icon_size'],
-        ),
-      );
-      $icon_name = 'file-' . $this->mapExtension($extension);
-      $icon = icon($icon_name, $options);
-      // Fall back to generic file icon.
-      if (strpos($icon, '<!-- ') === 0) {
-        $icon = icon('file', $options);
+      $icon_name = $this->mapExtensionToName($extension);
+      if ($this->options['display_type'] == 'img') {
+        $icon = $this->renderImg($icon_name);
+      }
+      else {
+        $icon = $this->renderSvg($icon_name);
       }
       return $icon;
     }
+  }
+
+  /**
+   * Render the icon as svg tag.
+   */
+  protected function renderSvg($icon_name) {
+    $options = array(
+      'attributes' => array(
+        'width' => $this->options['icon_size'],
+        'height' => $this->options['icon_size'],
+      ),
+    );
+    return icon($icon_name, $options);
+  }
+
+  /**
+   * Render the icon as img tag.
+   */
+  protected function renderImg($icon_name) {
+    $attributes = array(
+      'width' => $this->options['icon_size'],
+      'height' => $this->options['icon_size'],
+      'alt' => '',
+      'src' => base_path() . icon_get_path($icon_name),
+    );
+    return '<img ' . backdrop_attributes($attributes) . '>';
   }
 
   /**
@@ -65,7 +96,7 @@ class views_handler_field_file_icon extends views_handler_field {
    *
    * @return string
    */
-  protected function mapExtension($extension) {
+  protected function mapExtensionToName($extension) {
     // If there's no 1:1 icon name match for the extension, map to one.
     $mapping = array(
       'avi' => 'video',
@@ -92,10 +123,15 @@ class views_handler_field_file_icon extends views_handler_field {
       'webp' => 'image',
       'xlsx' => 'xls',
     );
+    $icon_name = 'file-' . $extension;
     if (array_key_exists($extension, $mapping)) {
-      return $mapping[$extension];
+      $icon_name = 'file-' . $mapping[$extension];
     }
-    return $extension;
+    // Fall back to generic icon, if no such icon found.
+    if (!icon_get_path($icon_name)) {
+      $icon_name = 'file';
+    }
+    return $icon_name;
   }
 
 }
