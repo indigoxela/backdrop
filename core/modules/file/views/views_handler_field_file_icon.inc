@@ -36,8 +36,8 @@ class views_handler_field_file_icon extends views_handler_field {
       '#type' => 'radios',
       '#title' => t('Display type'),
       '#options' => array(
-        'svg' => t('As svg tag'),
-        'img' => t('As img tag'),
+        'svg' => t('Inline as SVG markup'),
+        'img' => t('Regular image'),
       ),
       '#default_value' => $this->options['display_type'],
     );
