@@ -97,7 +97,9 @@ class views_handler_field_file_icon extends views_handler_field {
    * @return string
    */
   protected function mapExtensionToName($extension) {
-    // If there's no 1:1 icon name match for the extension, map to one.
+    // If there's no 1:1 icon name match for the extension, map to one. It's
+    // possible that modules or themes provide additional file icons, so this
+    // only acts as a fallback.
     $mapping = array(
       'avi' => 'video',
       'docx' => 'doc',
@@ -124,12 +126,14 @@ class views_handler_field_file_icon extends views_handler_field {
       'xlsx' => 'xls',
     );
     $icon_name = 'file-' . $extension;
-    if (array_key_exists($extension, $mapping)) {
-      $icon_name = 'file-' . $mapping[$extension];
-    }
-    // Fall back to generic icon, if no such icon found.
     if (!icon_get_path($icon_name)) {
-      $icon_name = 'file';
+      if (array_key_exists($extension, $mapping)) {
+        $icon_name = 'file-' . $mapping[$extension];
+      }
+      // Fall back to generic file icon.
+      else {
+        $icon_name = 'file';
+      }
     }
     return $icon_name;
   }
