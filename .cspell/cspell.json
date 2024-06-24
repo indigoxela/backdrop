@@ -51,6 +51,7 @@
     "/core/misc/ckeditor/",
     "/core/misc/html5.js",
     "/core/misc/jquery.js",
+    "/core/misc/jquery-4*.min.js",
     "/core/misc/jquery-extend*",
     "/core/misc/jquery-html-prefilter*",
     "/core/misc/jquery.*.js",
