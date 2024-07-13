@@ -851,8 +851,12 @@ class BackdropImageCommand extends CKEditor5.core.Command {
       const imageCaption = ImageCaptionUtils.getCaptionFromImageModelElement(imageElement);
       existingValues['data-has-caption'] = !!imageCaption;
       if (imageCaption && imageCaption.childCount) {
-        const captionValue = editor.data.processor.toData(imageCaption.getChild(0));
-        existingValues['data-caption'] = captionValue;
+        // @todo the following "toData()" turned into a breaker with v42.
+        // const captionValue = editor.data.processor.toData(imageCaption.getChild(0));
+        //
+        // Fun fact: The actual value of "data-caption" doesn't matter at all at
+        // this point. As long as it exists, it seems to do the job.
+        existingValues['data-caption'] = '';
       }
     }
 
