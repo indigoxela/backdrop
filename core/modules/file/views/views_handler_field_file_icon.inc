@@ -95,6 +95,7 @@ class views_handler_field_file_icon extends views_handler_field {
    *   The original file extension.
    *
    * @return string
+   *   The name of an icon file, as expected by icon().
    */
   protected function mapExtensionToName($extension) {
     // If there's no 1:1 icon name match for the extension, map to one. It's
