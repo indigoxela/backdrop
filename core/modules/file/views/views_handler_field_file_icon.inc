@@ -16,6 +16,7 @@ class views_handler_field_file_icon extends views_handler_field {
     $options = parent::option_definition();
     $options['icon_size'] = array('default' => 32);
     $options['display_type'] = array('default' => 'svg');
+    $options['add_alt_text'] = array('default' => TRUE);
     return $options;
   }
 
@@ -41,6 +42,11 @@ class views_handler_field_file_icon extends views_handler_field {
       ),
       '#default_value' => $this->options['display_type'],
     );
+    $form['add_alt_text'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Add alternative text'),
+      '#default_value' => $this->options['add_alt_text'],
+    );
   }
 
   /**
@@ -53,10 +59,10 @@ class views_handler_field_file_icon extends views_handler_field {
     if ($extension = pathinfo($value, PATHINFO_EXTENSION)) {
       $icon_name = $this->mapExtensionToName($extension);
       if ($this->options['display_type'] == 'img') {
-        $icon = $this->renderImg($icon_name);
+        $icon = $this->renderImg($icon_name, $extension);
       }
       else {
-        $icon = $this->renderSvg($icon_name);
+        $icon = $this->renderSvg($icon_name, $extension);
       }
       return $icon;
     }
@@ -65,26 +71,36 @@ class views_handler_field_file_icon extends views_handler_field {
   /**
    * Render the icon as svg tag.
    */
-  protected function renderSvg($icon_name) {
+  protected function renderSvg($icon_name, $extension) {
     $options = array(
       'attributes' => array(
         'width' => $this->options['icon_size'],
         'height' => $this->options['icon_size'],
       ),
     );
+    if ($this->options['add_alt_text']) {
+      $options['alt'] = t('File icon for @extension extension', array(
+        '@extension' => $extension,
+      ));
+    }
     return icon($icon_name, $options);
   }
 
   /**
    * Render the icon as img tag.
    */
-  protected function renderImg($icon_name) {
+  protected function renderImg($icon_name, $extension) {
     $attributes = array(
       'width' => $this->options['icon_size'],
       'height' => $this->options['icon_size'],
       'alt' => '',
       'src' => base_path() . icon_get_path($icon_name),
     );
+    if ($this->options['add_alt_text']) {
+      $attributes['alt'] = t('File icon for @extension extension', array(
+        '@extension' => $extension,
+      ));
+    }
     return '<img ' . backdrop_attributes($attributes) . '>';
   }
 
