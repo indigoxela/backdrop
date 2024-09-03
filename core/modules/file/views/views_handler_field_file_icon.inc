@@ -37,15 +37,18 @@ class views_handler_field_file_icon extends views_handler_field {
       '#type' => 'radios',
       '#title' => t('Display type'),
       '#options' => array(
-        'svg' => t('Inline SVG markup'),
-        'img' => t('Regular image'),
+        'svg' => t('Inline <code>&lt;svg&gt;</code> tag'),
+        'img' => t('Regular <code>&lt;img&gt;</code> tag'),
       ),
       '#default_value' => $this->options['display_type'],
     );
+    $form['display_type']['svg']['#description'] = t('Inline SVG images are usually more efficient and easier to style.');
+    $form['display_type']['img']['#description'] = t('Regular image tags can be more efficient when showing the same icon many times.');
     $form['add_alt_text'] = array(
       '#type' => 'checkbox',
       '#title' => t('Add alternative text'),
       '#default_value' => $this->options['add_alt_text'],
+      '#description' => t('If alternative text is omitted, this icon will be marked as decorative only.'),
     );
   }
 
@@ -53,11 +56,11 @@ class views_handler_field_file_icon extends views_handler_field {
    * {@inheritdoc}
    */
   public function render($values) {
-    $value = $this->get_value($values);
+    $uri = $this->get_value($values);
 
     // If there is an extension.
-    if ($extension = pathinfo($value, PATHINFO_EXTENSION)) {
-      $icon_name = $this->mapExtensionToName($extension);
+    if ($extension = pathinfo($uri, PATHINFO_EXTENSION)) {
+      $icon_name = $this->getIconName($uri);
       if ($this->options['display_type'] == 'img') {
         $icon = $this->renderImg($icon_name, $extension);
       }
@@ -107,51 +110,51 @@ class views_handler_field_file_icon extends views_handler_field {
   /**
    * Map file extensions to Phosphor icons.
    *
-   * @param string $extension
-   *   The original file extension.
+   * @param string $uri
+   *   The original file path.
    *
    * @return string
    *   The name of an icon file, as expected by icon().
    */
-  protected function mapExtensionToName($extension) {
+  protected function getIconName($uri) {
     // If there's no 1:1 icon name match for the extension, map to one. It's
     // possible that modules or themes provide additional file icons, so this
-    // only acts as a fallback.
+    // only acts as a fallback for some common types.
     $mapping = array(
-      'avi' => 'video',
       'docx' => 'doc',
-      'gif' => 'image',
       'gz' => 'archive',
       'jpeg' => 'jpg',
-      'm4a' => 'audio',
-      'm4v' => 'video',
-      'mov' => 'video',
-      'mp3' => 'audio',
-      'mp4' => 'video',
-      'mpeg' => 'video',
       'odt' => 'text',
-      'oga' => 'audio',
-      'ogg' => 'video',
-      'ogv' => 'video',
       'pptx' => 'ppt',
       'tar' => 'archive',
-      'tiff' => 'image',
-      'tif' => 'image',
-      'weba' => 'audio',
-      'webm' => 'video',
-      'webp' => 'image',
       'xlsx' => 'xls',
     );
-    $icon_name = 'file-' . $extension;
-    if (!icon_get_path($icon_name)) {
-      if (array_key_exists($extension, $mapping)) {
-        $icon_name = 'file-' . $mapping[$extension];
-      }
-      // Fall back to generic file icon.
-      else {
-        $icon_name = 'file';
-      }
+    $extension = pathinfo($uri, PATHINFO_EXTENSION);
+    if (icon_get_path('file-' . $extension)) {
+      $icon_name = 'file-' . $extension;
     }
+    elseif (array_key_exists($extension, $mapping)) {
+      $icon_name = 'file-' . $mapping[$extension];
+    }
+    else {
+      // If the extension has a more specific mimetype, use that type prefix.
+      $mime_type = file_get_mimetype($uri);
+      $mime_parts = explode('/', $mime_type);
+      if (count($mime_parts) && in_array($mime_parts[0], array(
+        'image',
+        'video',
+        'audio',
+        'text',
+      ))) {
+        $icon_name = 'file-' . $mime_parts[0];
+      };
+    }
+
+    // Fallback to the generic icon if there are no other matches.
+    if (!isset($icon_name)) {
+      $icon_name = 'file';
+    }
+
     return $icon_name;
   }
 
