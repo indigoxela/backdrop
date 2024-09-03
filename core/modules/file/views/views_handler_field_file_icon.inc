@@ -104,6 +104,11 @@ class views_handler_field_file_icon extends views_handler_field {
         '@extension' => $extension,
       ));
     }
+    else {
+      // Add aria-hidden if this is a purely decorative situation.
+      // See https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-hidden
+      $attributes['aria-hidden'] = 'true';
+    }
     return '<img ' . backdrop_attributes($attributes) . '>';
   }
 
