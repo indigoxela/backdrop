@@ -37,13 +37,17 @@ class views_handler_field_file_icon extends views_handler_field {
       '#type' => 'radios',
       '#title' => t('Display type'),
       '#options' => array(
-        'svg' => t('Embedded SVG markup'),
-        'img' => t('Referenced image'),
+        'svg' => t('Embedded with !svg tag', array(
+          '!svg' => '<code>&lt;svg&gt;</code>',
+        )),
+        'img' => t('Referenced with !img tag', array(
+          '!img' => '<code>&lt;img&gt;</code>',
+        )),
       ),
       '#default_value' => $this->options['display_type'],
     );
-    $form['display_type']['svg']['#description'] = t('Inline <code>&lt;svg&gt;</code> icons are efficient and easier to recolor and style.');
-    $form['display_type']['img']['#description'] = t('Referencing via <code>&lt;img&gt;</code> tags can be more efficient when showing the same icon many times.');
+    $form['display_type']['svg']['#description'] = t('Inline SVG icons are efficient and easier to recolor and style.');
+    $form['display_type']['img']['#description'] = t('Referencing images can be more efficient when showing the same icon many times.');
     $form['add_alt_text'] = array(
       '#type' => 'checkbox',
       '#title' => t('With text alternative'),
