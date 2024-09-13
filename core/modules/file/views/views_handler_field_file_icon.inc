@@ -47,12 +47,12 @@ class views_handler_field_file_icon extends views_handler_field {
       '#default_value' => $this->options['display_type'],
     );
     $form['display_type']['svg']['#description'] = t('Inline SVG icons are efficient and easier to recolor and style.');
-    $form['display_type']['img']['#description'] = t('Referencing images can be more efficient when showing the same icon many times.');
+    $form['display_type']['img']['#description'] = t('Referenced images can be more efficient when showing the same icon many times.');
     $form['add_alt_text'] = array(
       '#type' => 'checkbox',
-      '#title' => t('With text alternative'),
+      '#title' => t('Include text alternative'),
       '#default_value' => $this->options['add_alt_text'],
-      '#description' => t('Adds a descriptive text. Do not enable for icons that are decorative only.'),
+      '#description' => t('Adds descriptive text. Do not enable for icons that are decorative only.'),
     );
   }
 
