@@ -1624,6 +1624,11 @@ function install_check_translation_download($langcode) {
     // Example match: 1.28-dev => 1.x (Backdrop core).
     $version = $matches[1] . 'x';
   }
+  // For stable releases strip off the patch level.
+  elseif (preg_match("/^(\d+\.\d+)\.\d$/", $version, $matches)) {
+    // @todo It's not guaranteed that this file (already) exists.
+    $version = $matches[1];
+  }
 
   // Build URL for the translation file and the translation server.
   $variables = array(
