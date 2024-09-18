@@ -1616,18 +1616,12 @@ function install_check_translation_download($langcode) {
   }
 
   $version = BACKDROP_VERSION;
+  $fallback_version = '1.x';
 
-  // For dev releases, remove the '-dev' part and trust the translation server
-  // to fall back to the latest stable release for that branch.
-  // @see locale_translation_build_projects()
-  if (preg_match("/^(\d+\.).*-(dev|preview)$/", $version, $matches)) {
-    // Example match: 1.28-dev => 1.x (Backdrop core).
-    $version = $matches[1] . 'x';
-  }
-  // For stable releases strip off the patch level.
-  elseif (preg_match("/^(\d+\.\d+)\.\d$/", $version, $matches)) {
-    // @todo It's not guaranteed that this file (already) exists.
-    $version = $matches[1];
+  // Get major and minor version, ignore any irrelevant dev or preview addition.
+  if (preg_match("/^(\d+)\.(\d+)/", $version, $matches)) {
+    $version = $matches[0];
+    $fallback_version = $matches[1] . '.x';
   }
 
   // Build URL for the translation file and the translation server.
@@ -1638,6 +1632,9 @@ function install_check_translation_download($langcode) {
     '%language' => $langcode,
   );
   $translation_url = strtr(INSTALL_LOCALIZATION_SERVER_PATTERN, $variables);
+  // Also build a generic fallback URL.
+  $variables['%version'] = $fallback_version;
+  $fallback_url = strtr(INSTALL_LOCALIZATION_SERVER_PATTERN, $variables);
 
   $elements = parse_url($translation_url);
   $server_url = $elements['scheme'] . '://' . $elements['host'];
@@ -1655,7 +1652,17 @@ function install_check_translation_download($langcode) {
     $online = TRUE;
   }
   if ($online) {
-    $translation_available = install_check_localization_server($translation_url);
+    // We have to start with the fallback URL, otherwise the static cache
+    // already returns FALSE.
+    $translation_available = install_check_localization_server($fallback_url);
+    if ($translation_available) {
+      // Look up the version specific translation file. We can not rely on its
+      // existence, as generation happens manually after release.
+      // If it does not exist, yet, we stick with the generic fallback.
+      if (!install_check_localization_server($translation_url)) {
+        $translation_url = $fallback_url;
+      }
+    }
   }
 
   // If the translations directory does not exist, throw an error.
