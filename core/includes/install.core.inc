@@ -1616,7 +1616,7 @@ function install_check_translation_download($langcode) {
   }
 
   $version = BACKDROP_VERSION;
-  $fallback_version = '1.x';
+  $fallback_version = BACKDROP_CORE_COMPATIBILITY;
 
   // Get major and minor version, ignore any irrelevant dev or preview addition.
   if (preg_match("/^(\d+)\.(\d+)/", $version, $matches)) {
